@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- VARIÁVEIS E BASE --- */
+        :root {
+            --bg-color: #050505;
+            --green: #00ff41;
+            --green-glow: rgba(0, 255, 65, 0.2);
+            --orange: #ff8c00;
+            --glass: rgba(15, 15, 15, 0.75);
+            --border: rgba(0, 255, 65, 0.1);
+            --text-main: #e0e0e0;
+            --text-dim: #888;
+            --font-mono: 'Fira Code', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- EFEITOS DE FUNDO (TERMINAL ANTIGO) --- */
+        .grid-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                              linear-gradient(90deg, rgba(255, 0, 0, 0.01), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.01));
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* --- CONTAINER CENTRALIZADO --- */
+        .content-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 5%;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* --- ANIMAÇÕES --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .reveal { animation: fadeInUp 1s ease forwards; }
+        .floating { animation: float 5s ease-in-out infinite; }
+        .cursor { display: inline-block; width: 10px; height: 1.2em; background: var(--green); margin-left: 5px; animation: blink 1s infinite; vertical-align: middle; }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .terminal-icon {
+            border: 2px solid var(--green);
+            padding: 25px;
+            font-size: 2.5rem;
+            color: var(--green);
+            margin-bottom: 30px;
+            background: var(--glass);
+            box-shadow: 0 0 25px var(--green-glow);
+            backdrop-filter: blur(8px);
+        }
+
+        .user-access {
+            font-size: 0.9rem;
+            color: var(--green);
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 8vw, 4rem);
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .green { color: var(--green); text-shadow: 0 0 10px var(--green-glow); }
+        .orange { color: var(--orange); }
+
+        .label {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .description {
+            max-width: 600px;
+            color: var(--text-dim);
+            margin-bottom: 40px;
+        }
+
+        /* --- BOTÕES --- */
+        .actions { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+
+        .btn {
+            font-family: var(--font-mono);
+            padding: 15px 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border: 1px solid;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            border-color: var(--green);
+            color: var(--green);
+            background: transparent;
+        }
+
+        .btn-primary:hover {
+            background: var(--green);
+            color: #000;
+            box-shadow: 0 0 20px var(--green-glow);
+        }
+
+        .btn-glass {
+            border-color: #333;
+            color: var(--text-main);
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-glass:hover {
+            border-color: var(--text-dim);
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* --- SEÇÕES E CARDS --- */
+        .section { padding: 100px 0; }
+
+        .title-center {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 40px;
+            backdrop-filter: blur(12px);
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: var(--green);
+            transform: translateY(-5px);
+        }
+
+        .card h3 { margin: 20px 0 10px; color: var(--green); }
+
+        /* --- PROJECT PREVIEW STYLES --- */
+        .project-card {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-preview {
+            width: 100%;
+            height: 180px;
+            background: #000;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-preview iframe {
+            width: 1200px;
+            height: 800px;
+            transform: scale(0.24);
+            transform-origin: 0 0;
+            border: none;
+            pointer-events: none;
+        }
+
+        .preview-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 5, 5, 0.5);
+            transition: 0.3s;
+        }
+
+        .card:hover .preview-overlay {
+            background: rgba(0, 255, 65, 0.05);
+        }
+
+        .btn-link {
+            margin-top: auto;
+            color: var(--green);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: block;
+            padding-top: 15px;
+        }
+
+        .btn-link:hover {
+            text-shadow: 0 0 8px var(--green-glow);
+        }
+
+        /* --- TIMELINE --- */
+        .timeline {
+            max-width: 800px;
+            margin: 0 auto;
+            border-left: 2px solid var(--border);
+            padding-left: 40px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 50px;
+            background: var(--glass);
+            padding: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -53px;
+            top: 30px;
+            width: 20px;
+            height: 20px;
+            background: var(--bg-color);
+            border: 2px solid var(--green);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--green);
+        }
+
+        .tag {
+            font-size: 0.7rem;
+            color: var(--green);
+            border: 1px solid var(--green);
+            padding: 3px 8px;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 60px 0;
+            background: var(--glass);
+            margin-top: 50px;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .footer-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-bottom: 1px solid transparent;
+            transition: 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--green);
+            border-bottom: 1px solid var(--green);
+        }
+
+        .copyright {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- RESPONSIVIDADE --- */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .timeline { margin-left: 20px; padding-left: 25px; }
+            .timeline-item::before { left: -38px; }
+            .section { padding: 60px 0; }
+            .footer-links { flex-direction: column; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grid-overlay"></div>
+
+    <main class="content-wrapper">
+        
+        <section class="hero reveal">
+            <div class="terminal-icon floating"><span>>_</span></div>
+            <p class="user-access">ACCESS_GRANTED: FELIPE MELLO</p>
+            <p class="label">[ PORTFOLIO.EXE ]</p>
+            <h1><span class="green">WEB</span> // <span class="orange">DEVELOPER</span><span class="cursor"></span></h1>
+            <p class="description">
+                Creating digital experiences focused on clean code and high performance.
+            </p>
+            <div class="actions">
+                <a href="#projects" class="btn btn-primary">VIEW_PROJECTS</a>
+                <a href="#about" class="btn btn-glass">WHAT I KNOW</a>
+            </div>
+        </section>
+
+        <section id="about" class="section reveal">
+            <p class="label" style="text-align: center;">[ PROFILE ]</p>
+            <h2 class="title-center">WHAT I KNOW</h2>
+            <div class="services-grid">
+                <div class="card">
+                    <div class="tag">MODULE_01</div>
+                    <h3>Development</h3>
+                    <p>Aprendendo a criar sistemas robustos com performance otimizada e código limpo.</p>
+                </div>
+                <div class="card">
+                    <div class="tag">MODULE_02</div>
+                    <h3>UI/UX Design</h3>
+                    <p>Interfaces focadas na experiência do usuário e usabilidade moderna</p>
+                </div>
+                <div class="card">
+                    <div class="tag">MODULE_03</div>
+                    <h3>Stacks</h3>
+                    <p>JS, Java, html/css, python.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="section reveal">
+            <p class="label" style="text-align: center;">[ REPOSITORY ]</p>
+            <h2 class="title-center">PROJECT_LOG</h2>
+            <div class="services-grid">
+                <div class="card project-card">
+                    <div class="project-preview">
+                        <iframe src="projects\project1\atvdd2.html"></iframe>
+                        <div class="preview-overlay"></div>
+                    </div>
+                    <div class="tag">FILE_01</div>
+                    <h3>Project One</h3>
+                    <p>Brief description of your first project. Focus on the core functionality.</p>
+                    <a href="projects\project1\atvdd2.html" class="btn-link">EXECUTE_RUN ></a>
+                </div>
+
+                <div class="card project-card">
+                    <div class="project-preview">
+                        <iframe src="projects\project2\atvdd4.html"></iframe>
+                        <div class="preview-overlay"></div>
+                    </div>
+                    <div class="tag">FILE_02</div>
+                    <h3>Project Two</h3>
+                    <p>Brief description of your second project. Highlight the technology used.</p>
+                    <a href="projects\project2\atvdd4.html" class="btn-link">EXECUTE_RUN ></a>
+                </div>
+
+                <div class="card project-card">
+                    <div class="project-preview">
+                        <iframe src="projects\project3\1.html"></iframe>
+                        <div class="preview-overlay"></div>
+                    </div>
+                    <div class="tag">FILE_03</div>
+                    <h3>Project Three</h3>
+                    <p>Brief description of your third project. Focus on the UI/UX result.</p>
+                    <a href="projects\project3\1.html" class="btn-link">EXECUTE_RUN ></a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section reveal">
+            <p class="label" style="text-align: center;">[ HISTORY ]</p>
+            <h2 class="title-center">MY JOURNEY</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <span class="tag">2022 [INIT]</span>
+                    <h3>Journey Begins</h3>
+                    <p>Started exploring the world of programming on college.</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="tag">2023 [EXPAND]</span>
+                    <h3>Detour</h3>
+                    <p>As colegge didn't prove itself enough, started working to a small startup doing procurement and marketplace analytics.</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="tag">2025 [EXPAND]</span>
+                    <h3>Stagnation</h3>
+                    <p>Hired at Caffeine Army as backoffice, helped on the ERP implementation, however, felt stagnated on the area again.</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="tag">2025.2 [EXPAND]</span>
+                    <h3>Alpha EdTech</h3>
+                    <p>Decided to pivot, now on the track to change my life for the better with the help of ALPHA ED TECH!</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="content-wrapper">
+            <div class="footer-content">
+                <p class="label">Next command?</p>
+                <div class="footer-links">
+                    <a href="felipemello29@gmail.com">EMAIL_ME</a>
+                    <a href="https://www.linkedin.com/in/felipe-mello-53541421a/" target="_blank">LINKEDIN_PROFILE</a>
+                    <a href="https://github.com/Felipemello29" target="_blank">GITHUB_ARCHIVE</a>
+                </div>
+                <p class="copyright">© 2025 // System developed for Alpha</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
